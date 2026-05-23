@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import Toast from 'primevue/toast'
 import { useToast } from 'primevue/usetoast'
 import type { FiltersState, Actividad } from './types'
@@ -9,6 +9,39 @@ import FilterBar from './components/FilterBar.vue'
 import ResultsTable from './components/ResultsTable.vue'
 
 const toast = useToast()
+
+// Drag-and-drop overlay
+const dragging = ref(false)
+let dragCounter = 0
+
+function onDragEnter(e: DragEvent) {
+  if (!e.dataTransfer?.types.includes('Files')) return
+  dragCounter++
+  if (dragCounter === 1) dragging.value = true
+}
+
+function onDragLeave() {
+  dragCounter--
+  if (dragCounter <= 0) {
+    dragCounter = 0
+    dragging.value = false
+  }
+}
+
+function onDragOver(e: DragEvent) {
+  if (!e.dataTransfer?.types.includes('Files')) return
+  e.preventDefault()
+}
+
+function onGlobalDrop(e: DragEvent) {
+  dragCounter = 0
+  dragging.value = false
+  const file = e.dataTransfer?.files[0]
+  if (file) {
+    onFileSelected(file)
+  }
+  e.preventDefault()
+}
 
 // Data state
 const actividades = ref<Actividad[]>([])
@@ -45,6 +78,12 @@ const EXCEL_FILENAME = 'Repositorio%20actividades%20Competencias.xlsx'
 
 // On mount, try to auto-load the default Excel file
 onMounted(async () => {
+  // Global drag-and-drop listeners for the overlay
+  document.addEventListener('dragenter', onDragEnter)
+  document.addEventListener('dragleave', onDragLeave)
+  document.addEventListener('dragover', onDragOver)
+  document.addEventListener('drop', onGlobalDrop)
+
   const DEFAULT_FILE = `${import.meta.env.BASE_URL}${EXCEL_FILENAME}`
   try {
     const data = await parseExcelFromUrl(DEFAULT_FILE)
@@ -60,6 +99,13 @@ onMounted(async () => {
   } finally {
     autoLoading.value = false
   }
+})
+
+onUnmounted(() => {
+  document.removeEventListener('dragenter', onDragEnter)
+  document.removeEventListener('dragleave', onDragLeave)
+  document.removeEventListener('dragover', onDragOver)
+  document.removeEventListener('drop', onGlobalDrop)
 })
 
 // Handle file upload via drag & drop
@@ -111,6 +157,17 @@ function clearFilters() {
 
 <template>
   <Toast />
+
+  <!-- Global drag-and-drop overlay -->
+  <Transition name="fade">
+    <div v-if="dragging" class="drag-overlay">
+      <div class="drag-overlay-content">
+        <i class="pi pi-file-excel" style="font-size: 4rem; color: #2d8a4e"></i>
+        <p class="drag-overlay-title">Suelta tu archivo Excel aquí</p>
+        <p class="drag-overlay-hint">Formatos: .xlsx, .xls</p>
+      </div>
+    </div>
+  </Transition>
 
   <header class="app-header">
     <div class="header-content">
@@ -257,5 +314,52 @@ function clearFilters() {
   .header-title {
     font-size: 1.2rem;
   }
+}
+
+/* Drag-and-drop overlay */
+.drag-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 61, 122, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.drag-overlay-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 3rem;
+  background: white;
+  border-radius: 20px;
+  border: 3px dashed #2d8a4e;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.drag-overlay-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #212529;
+}
+
+.drag-overlay-hint {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #868e96;
+}
+
+/* Fade transition */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
