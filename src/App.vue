@@ -41,24 +41,20 @@ const filters = ref<FiltersState>({
 // Filtered results
 const filteredActividades = computed(() => filterActividades(actividades.value, filters.value))
 
-// On mount, check if default Excel exists and auto-load it
+const EXCEL_FILENAME = 'Repositorio%20actividades%20Competencias.xlsx'
+
+// On mount, try to auto-load the default Excel file
 onMounted(async () => {
-  const DEFAULT_FILE = '/Repositorio actividades Competencias.xlsx'
+  const DEFAULT_FILE = `${import.meta.env.BASE_URL}${EXCEL_FILENAME}`
   try {
-    const resp = await fetch(DEFAULT_FILE, { method: 'HEAD' })
-    if (resp.ok) {
-      // File exists, load it silently
-      const data = await parseExcelFromUrl(DEFAULT_FILE)
-      applyData(data)
-      toast.add({
-        severity: 'success',
-        summary: 'Datos cargados',
-        detail: `${data.actividades.length} actividades cargadas`,
-        life: 3000,
-      })
-    } else {
-      noDefaultFile.value = true
-    }
+    const data = await parseExcelFromUrl(DEFAULT_FILE)
+    applyData(data)
+    toast.add({
+      severity: 'success',
+      summary: 'Datos cargados',
+      detail: `${data.actividades.length} actividades cargadas`,
+      life: 3000,
+    })
   } catch {
     noDefaultFile.value = true
   } finally {
