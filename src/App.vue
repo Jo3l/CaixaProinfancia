@@ -1,0 +1,265 @@
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
+import Toast from 'primevue/toast'
+import { useToast } from 'primevue/usetoast'
+import type { FiltersState, Actividad } from './types'
+import { parseExcelFile, parseExcelFromUrl, filterActividades } from './services/excelService'
+import FileUploader from './components/FileUploader.vue'
+import FilterBar from './components/FilterBar.vue'
+import ResultsTable from './components/ResultsTable.vue'
+
+const toast = useToast()
+
+// Data state
+const actividades = ref<Actividad[]>([])
+const competencias = ref<string[]>([])
+const edades = ref<string[]>([])
+const entidades = ref<string[]>([])
+const loading = ref(false)
+const loaded = ref(false)
+const autoLoading = ref(true) // trying to auto-load default file
+const noDefaultFile = ref(false) // true if default file not found
+const excelData = computed(() =>
+  loaded.value
+    ? {
+        actividades: actividades.value,
+        competencias: competencias.value,
+        edades: edades.value,
+        entidades: entidades.value,
+      }
+    : null
+)
+
+// Filter state
+const filters = ref<FiltersState>({
+  competencias: [],
+  edades: [],
+  entidades: [],
+  searchText: '',
+})
+
+// Filtered results
+const filteredActividades = computed(() => filterActividades(actividades.value, filters.value))
+
+// On mount, check if default Excel exists and auto-load it
+onMounted(async () => {
+  const DEFAULT_FILE = '/Repositorio actividades Competencias.xlsx'
+  try {
+    const resp = await fetch(DEFAULT_FILE, { method: 'HEAD' })
+    if (resp.ok) {
+      // File exists, load it silently
+      const data = await parseExcelFromUrl(DEFAULT_FILE)
+      applyData(data)
+      toast.add({
+        severity: 'success',
+        summary: 'Datos cargados',
+        detail: `${data.actividades.length} actividades cargadas`,
+        life: 3000,
+      })
+    } else {
+      noDefaultFile.value = true
+    }
+  } catch {
+    noDefaultFile.value = true
+  } finally {
+    autoLoading.value = false
+  }
+})
+
+// Handle file upload via drag & drop
+async function onFileSelected(file: File) {
+  loading.value = true
+  try {
+    const data = await parseExcelFile(file)
+    applyData(data)
+    toast.add({
+      severity: 'success',
+      summary: 'Archivo cargado',
+      detail: `${data.actividades.length} actividades cargadas desde "${file.name}"`,
+      life: 3000,
+    })
+  } catch {
+    toast.add({
+      severity: 'error',
+      summary: 'Error al leer el archivo',
+      detail: 'Asegúrate de que sea un archivo Excel válido (.xlsx)',
+      life: 5000,
+    })
+  } finally {
+    loading.value = false
+  }
+}
+
+function applyData(data: {
+  actividades: Actividad[]
+  competencias: string[]
+  edades: string[]
+  entidades: string[]
+}) {
+  actividades.value = data.actividades
+  competencias.value = data.competencias
+  edades.value = data.edades
+  entidades.value = data.entidades
+  loaded.value = true
+}
+
+function clearFilters() {
+  filters.value = {
+    competencias: [],
+    edades: [],
+    entidades: [],
+    searchText: '',
+  }
+}
+</script>
+
+<template>
+  <Toast />
+
+  <header class="app-header">
+    <div class="header-content">
+      <div class="header-brand">
+        <img src="/assets/img/caixabank-logo-1.svg" alt="CaixaBank" class="header-logo" />
+        <div class="header-text">
+          <h1 class="header-title">CaixaProinfancia Madrid</h1>
+          <p class="header-subtitle">Repositorio colaborativo de actividades formativas</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <div class="container">
+      <!-- File Upload Section (only shown if no default Excel file found) -->
+      <FileUploader
+        v-if="noDefaultFile && !loaded"
+        :loading="loading"
+        @file-selected="onFileSelected"
+      />
+
+      <!-- Loading state while checking for default file -->
+      <div v-if="autoLoading" class="loading-default">
+        <i class="pi pi-spin pi-spinner" style="font-size: 1.5rem"></i>
+        <p>Buscando archivo de datos...</p>
+      </div>
+
+      <!-- Filters -->
+      <FilterBar
+        :filters="filters"
+        :data="excelData"
+        @update:filters="(val) => (filters = val)"
+        @clear="clearFilters"
+      />
+
+      <!-- Results -->
+      <ResultsTable :actividades="filteredActividades" :loading="loading" />
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    <div class="container footer-content">
+      <p>CaixaProinfancia Madrid &copy; 2025</p>
+      <p class="footer-credits">
+        Desarrollado con Vue 3 + PrimeVue | Datos del repositorio colaborativo
+      </p>
+    </div>
+  </footer>
+</template>
+
+<style scoped>
+.app-header {
+  background: linear-gradient(135deg, #003d7a 0%, #0059b3 50%, #0073e6 100%);
+  color: white;
+  padding: 1.5rem 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.header-logo {
+  height: 40px;
+  filter: brightness(0) invert(1);
+}
+
+.header-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.header-subtitle {
+  margin: 0.15rem 0 0;
+  font-size: 0.9rem;
+  opacity: 0.85;
+  font-weight: 400;
+}
+
+.app-main {
+  min-height: calc(100vh - 200px);
+  padding: 2rem 0;
+  background: #f0f2f5;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.loading-default {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  color: #6c757d;
+  gap: 0.75rem;
+}
+
+.loading-default p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.app-footer {
+  background: #1a1a2e;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 1.5rem 0;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+.footer-content p {
+  margin: 0.25rem 0;
+}
+
+.footer-credits {
+  opacity: 0.6;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 600px) {
+  .header-brand {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .header-title {
+    font-size: 1.2rem;
+  }
+}
+</style>
