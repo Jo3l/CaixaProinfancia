@@ -1,6 +1,11 @@
 # CaixaProinfancia Madrid - Repositorio de Actividades
 
+[![Deploy to GitHub Pages](https://github.com/Jo3l/CaixaProinfancia/actions/workflows/deploy.yml/badge.svg)](https://github.com/Jo3l/CaixaProinfancia/actions/workflows/deploy.yml)
+[![Live Demo](https://img.shields.io/badge/demo-github_pages-blue)](https://jo3l.github.io/CaixaProinfancia/)
+
 Filtro interactivo para el repositorio colaborativo de actividades formativas de CaixaProinfancia Madrid, similar a [La Mochila de Kay](https://www.lamochiladekay.com/).
+
+**🌐 Demo en vivo:** [https://jo3l.github.io/CaixaProinfancia/](https://jo3l.github.io/CaixaProinfancia/)
 
 Cargando datos desde un archivo Excel, permite filtrar actividades por **competencia trabajada**, **edad**, **entidad** y **búsqueda de texto libre**.
 
