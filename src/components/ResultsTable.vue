@@ -18,7 +18,7 @@ const columns = [
   { field: 'nombre', header: 'Nombre de la actividad', sortable: true },
   { field: 'competencia', header: 'Competencia', sortable: true },
   { field: 'edades', header: 'Edades', sortable: true },
-  { field: 'entidad', header: 'Entidad', sortable: true },
+  { field: 'palabrasClave', header: 'Palabras clave', sortable: true },
 ]
 
 const totalRecords = computed(() => props.actividades.length)
@@ -52,7 +52,7 @@ function hasDetails(act: Actividad): boolean {
         'nombre',
         'competencia',
         'edades',
-        'entidad',
+        'palabrasClave',
         'objetivos',
         'descripcion',
         'materiales',

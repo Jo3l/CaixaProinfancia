@@ -47,9 +47,9 @@ function onGlobalDrop(e: DragEvent) {
 const actividades = ref<Actividad[]>([])
 const competencias = ref<string[]>([])
 const edades = ref<string[]>([])
-const entidades = ref<string[]>([])
 const loading = ref(false)
 const loaded = ref(false)
+const searched = ref(false)
 const autoLoading = ref(true) // trying to auto-load default file
 const noDefaultFile = ref(false) // true if default file not found
 const excelData = computed(() =>
@@ -58,7 +58,6 @@ const excelData = computed(() =>
         actividades: actividades.value,
         competencias: competencias.value,
         edades: edades.value,
-        entidades: entidades.value,
       }
     : null
 )
@@ -67,12 +66,13 @@ const excelData = computed(() =>
 const filters = ref<FiltersState>({
   competencias: [],
   edades: [],
-  entidades: [],
   searchText: '',
 })
 
 // Filtered results
-const filteredActividades = computed(() => filterActividades(actividades.value, filters.value))
+const filteredActividades = computed(() =>
+  searched.value ? filterActividades(actividades.value, filters.value) : []
+)
 
 const EXCEL_FILENAME = 'Repositorio%20actividades%20Competencias.xlsx'
 
@@ -132,16 +132,10 @@ async function onFileSelected(file: File) {
   }
 }
 
-function applyData(data: {
-  actividades: Actividad[]
-  competencias: string[]
-  edades: string[]
-  entidades: string[]
-}) {
+function applyData(data: { actividades: Actividad[]; competencias: string[]; edades: string[] }) {
   actividades.value = data.actividades
   competencias.value = data.competencias
   edades.value = data.edades
-  entidades.value = data.entidades
   loaded.value = true
 }
 
@@ -149,9 +143,9 @@ function clearFilters() {
   filters.value = {
     competencias: [],
     edades: [],
-    entidades: [],
     searchText: '',
   }
+  searched.value = false
 }
 </script>
 
@@ -172,11 +166,12 @@ function clearFilters() {
   <header class="app-header">
     <div class="header-content">
       <div class="header-brand">
-        <img src="/assets/img/caixabank-logo-1.svg" alt="CaixaBank" class="header-logo" />
+        <img src="/assets/img/logo-la-caixa_w.png" alt="CaixaBank" class="header-logo" />
         <div class="header-text">
-          <h1 class="header-title">CaixaProinfancia Madrid</h1>
-          <p class="header-subtitle">Repositorio colaborativo de actividades formativas</p>
+          <h1 class="header-title">Modero de éxito educativo de CaixaProinfancia en Madrid</h1>
+          <p class="header-subtitle">RECURSOS PARA LA MEJORA DE LAS COMPETENCIAS</p>
         </div>
+        <img src="/assets/img/Logo_CaixaProinfancia-w.png" alt="CaixaBank" class="header-logo" />
       </div>
     </div>
   </header>
@@ -196,11 +191,25 @@ function clearFilters() {
         <p>Buscando archivo de datos...</p>
       </div>
 
+      <!-- Nav buttons -->
+      <div class="nav-buttons">
+        <button class="nav-btn">CaixaProinfancia</button>
+        <button class="nav-btn">Modelo de Éxito Educativo</button>
+        <button class="nav-btn">Cuadro de competencias del modelo</button>
+        <button class="nav-btn">CaixaProinfancia en Madrid</button>
+      </div>
+
       <!-- Filters -->
       <FilterBar
         :filters="filters"
         :data="excelData"
-        @update:filters="(val) => (filters = val)"
+        @update:filters="
+          (val) => {
+            filters = val
+            searched = false
+          }
+        "
+        @search="searched = true"
         @clear="clearFilters"
       />
 
@@ -221,10 +230,17 @@ function clearFilters() {
 
 <style scoped>
 .app-header {
-  background: linear-gradient(135deg, #003d7a 0%, #0059b3 50%, #0073e6 100%);
+  background-color: black;
+  background-image: url('/assets/img/bg.jpg');
+  background-size: cover;
+  background-position: center;
   color: white;
-  padding: 1.5rem 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  position: relative;
+  min-height: 10rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .header-content {
@@ -236,14 +252,14 @@ function clearFilters() {
 .header-brand {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 2rem;
   justify-content: space-between;
-  width: 100%;
+  font-family: 'Weiss Std', serif;
 }
 
 .header-logo {
-  height: 40px;
-  filter: brightness(0) invert(1);
+  max-width: 220px;
+  filter: drop-shadow(2px 2px 2px black);
 }
 
 .header-title {
@@ -251,18 +267,22 @@ function clearFilters() {
   font-size: 1.5rem;
   font-weight: 700;
   letter-spacing: -0.01em;
+  text-align: center;
+  color: #00a3e0;
 }
 
 .header-subtitle {
   margin: 0.15rem 0 0;
-  font-size: 0.9rem;
+  font-size: 1.5rem;
   opacity: 0.85;
   font-weight: 400;
+  text-align: center;
+  color: #00a3e0;
 }
 
 .app-main {
   min-height: calc(100vh - 200px);
-  padding: 2rem 0;
+  padding: 1.5rem 0;
   background: #f0f2f5;
 }
 
@@ -361,5 +381,32 @@ function clearFilters() {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+/* Nav buttons */
+.nav-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.nav-btn {
+  padding: 2rem;
+  border: none;
+  background: #00a3e0;
+  color: white;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.nav-btn:hover {
+  background: #0088c4;
+  color: white;
 }
 </style>

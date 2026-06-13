@@ -55,7 +55,6 @@ function extractData(workbook: XLSX.WorkBook): ExcelData {
   const actividades: Actividad[] = []
   const competenciasSet = new Set<string>()
   const edadesSet = new Set<string>()
-  const entidadesSet = new Set<string>()
 
   for (let i = headerRowIndex + 1; i < rawData.length; i++) {
     const row = rawData[i]
@@ -65,10 +64,10 @@ function extractData(workbook: XLSX.WorkBook): ExcelData {
     const edades = String(row[1] || '').trim()
     const nombre = String(row[2] || '').trim()
     const objetivos = String(row[3] || '').trim()
-    const descripcion = String(row[4] || '').trim()
-    const materiales = String(row[5] || '').trim()
-    const enlace = String(row[6] || '').trim()
-    const entidad = String(row[7] || '').trim()
+    const palabrasClave = String(row[4] || '').trim()
+    const descripcion = String(row[5] || '').trim()
+    const materiales = String(row[6] || '').trim()
+    const enlace = String(row[7] || '').trim()
     const notas = String(row[8] || '').trim()
     const fechaRaw = row[9]
     const fecha = fechaRaw != null ? Number(fechaRaw) || null : null
@@ -80,30 +79,28 @@ function extractData(workbook: XLSX.WorkBook): ExcelData {
       edades,
       nombre,
       objetivos,
+      palabrasClave,
       descripcion,
       materiales,
       enlace,
-      entidad,
       notas,
       fecha,
     })
 
     if (competencia) competenciasSet.add(competencia)
     if (edades) edadesSet.add(edades)
-    if (entidad) entidadesSet.add(entidad)
   }
 
   return {
     actividades,
     competencias: [...competenciasSet].sort(),
     edades: [...edadesSet].sort(),
-    entidades: [...entidadesSet].sort(),
   }
 }
 
 export function filterActividades(
   actividades: Actividad[],
-  filters: { competencias: string[]; edades: string[]; entidades: string[]; searchText: string }
+  filters: { competencias: string[]; edades: string[]; searchText: string }
 ): Actividad[] {
   return actividades.filter((a) => {
     // Filter by competencia
@@ -116,11 +113,6 @@ export function filterActividades(
       return false
     }
 
-    // Filter by entidad
-    if (filters.entidades.length > 0 && !filters.entidades.includes(a.entidad)) {
-      return false
-    }
-
     // Filter by search text
     if (filters.searchText) {
       const search = filters.searchText.toLowerCase()
@@ -128,7 +120,7 @@ export function filterActividades(
         a.nombre,
         a.competencia,
         a.edades,
-        a.entidad,
+        a.palabrasClave,
         a.objetivos,
         a.descripcion,
         a.materiales,

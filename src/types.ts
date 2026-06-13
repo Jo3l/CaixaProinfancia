@@ -3,10 +3,10 @@ export interface Actividad {
   edades: string
   nombre: string
   objetivos: string
+  palabrasClave: string
   descripcion: string
   materiales: string
   enlace: string
-  entidad: string
   notas: string
   fecha: number | null
 }
@@ -14,7 +14,6 @@ export interface Actividad {
 export interface FiltersState {
   competencias: string[]
   edades: string[]
-  entidades: string[]
   searchText: string
 }
 
@@ -22,5 +21,4 @@ export interface ExcelData {
   actividades: Actividad[]
   competencias: string[]
   edades: string[]
-  entidades: string[]
 }
