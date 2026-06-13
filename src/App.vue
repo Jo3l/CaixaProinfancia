@@ -988,7 +988,7 @@ function clearFilters() {
 
   <footer class="app-footer">
     <div class="container footer-content">
-      <p>CaixaProinfancia Madrid © 2025</p>
+      <p>CaixaProinfancia Madrid</p>
     </div>
   </footer>
 </template>
