@@ -2,7 +2,6 @@
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Tag from 'primevue/tag'
-import InputText from 'primevue/inputtext'
 import { ref, computed } from 'vue'
 import type { Actividad } from '../types'
 
@@ -12,7 +11,6 @@ const props = defineProps<{
 }>()
 
 const expandedRows = ref<Record<string, boolean>>({})
-const globalFilter = ref('')
 
 const columns = [
   { field: 'nombre', header: 'Nombre de la actividad', sortable: true },
@@ -35,30 +33,12 @@ function hasDetails(act: Actividad): boolean {
         <strong>{{ totalRecords }}</strong>
         {{ totalRecords === 1 ? 'actividad encontrada' : 'actividades encontradas' }}
       </div>
-      <div class="p-input-icon-left search-table">
-        <InputText
-          v-model="globalFilter"
-          placeholder="Filtrar en tabla..."
-          class="table-search-input"
-        />
-      </div>
     </div>
 
     <DataTable
       v-model:expanded-rows="expandedRows"
       :value="actividades"
       :loading="loading"
-      :global-filter-fields="[
-        'nombre',
-        'competencia',
-        'edades',
-        'palabrasClave',
-        'objetivos',
-        'descripcion',
-        'materiales',
-        'notas',
-      ]"
-      :global-filter="globalFilter"
       striped-rows
       paginator
       :rows="25"
@@ -157,14 +137,6 @@ function hasDetails(act: Actividad): boolean {
   color: #495057;
 }
 
-.search-table {
-  width: 280px;
-}
-
-.table-search-input {
-  width: 100%;
-}
-
 .results-table {
   font-size: 0.9rem;
 }
@@ -250,10 +222,6 @@ function hasDetails(act: Actividad): boolean {
   .results-header {
     flex-direction: column;
     align-items: stretch;
-  }
-
-  .search-table {
-    width: 100%;
   }
 
   .results-table :deep(.p-datatable-wrapper) {

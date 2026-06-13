@@ -325,52 +325,6 @@ function clearFilters() {
   font-size: 0.8rem;
 }
 
-@media (max-width: 768px) {
-  .header-brand {
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    text-align: center;
-  }
-
-  .header-title {
-    font-size: 1rem;
-  }
-
-  .header-subtitle {
-    font-size: 0.85rem;
-  }
-
-  .header-logo {
-    max-width: 140px;
-  }
-
-  .header-logo:last-child {
-    display: none;
-  }
-
-  .container {
-    padding: 0 1rem;
-  }
-
-  .nav-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
-  }
-
-  .nav-btn {
-    padding: 0.75rem 1rem;
-    font-size: 0.95rem;
-    width: 100%;
-    white-space: normal;
-  }
-
-  .app-main {
-    padding: 1rem 0;
-  }
-}
-
 /* Drag-and-drop overlay */
 .drag-overlay {
   position: fixed;
@@ -443,5 +397,60 @@ function clearFilters() {
 .nav-btn:hover {
   background: #0088c4;
   color: white;
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    min-height: 14rem;
+  }
+
+  .header-brand {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  .header-title {
+    font-size: 1rem;
+  }
+
+  .header-subtitle {
+    font-size: 0.85rem;
+  }
+
+  .header-logo {
+    max-width: 140px;
+  }
+
+  .header-logo:last-child {
+    display: none;
+  }
+
+  .container {
+    padding: 0 1rem;
+  }
+
+  .nav-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .nav-btn {
+    max-width: calc(50% - 10px);
+    flex: 1 1 calc(50% - 10px);
+    padding: 1rem;
+    font-size: 0.95rem;
+    white-space: normal;
+    text-align: center;
+    white-space: initial;
+    padding: 1rem;
+  }
+
+  .app-main {
+    padding: 1rem 0;
+  }
 }
 </style>
