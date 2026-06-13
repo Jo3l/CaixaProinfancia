@@ -241,4 +241,27 @@ function hasDetails(act: Actividad): boolean {
   font-size: 0.85rem;
   color: #adb5bd;
 }
+
+@media (max-width: 768px) {
+  .results-section {
+    padding: 1rem;
+  }
+
+  .results-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-table {
+    width: 100%;
+  }
+
+  .results-table :deep(.p-datatable-wrapper) {
+    overflow-x: auto;
+  }
+
+  .expansion-panel {
+    padding: 0.75rem;
+  }
+}
 </style>

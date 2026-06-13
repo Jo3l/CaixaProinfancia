@@ -247,6 +247,7 @@ function clearFilters() {
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 2rem;
+  width: 100%;
 }
 
 .header-brand {
@@ -324,15 +325,49 @@ function clearFilters() {
   font-size: 0.8rem;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .header-brand {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     gap: 0.5rem;
+    text-align: center;
   }
 
   .header-title {
-    font-size: 1.2rem;
+    font-size: 1rem;
+  }
+
+  .header-subtitle {
+    font-size: 0.85rem;
+  }
+
+  .header-logo {
+    max-width: 140px;
+  }
+
+  .header-logo:last-child {
+    display: none;
+  }
+
+  .container {
+    padding: 0 1rem;
+  }
+
+  .nav-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .nav-btn {
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    width: 100%;
+    white-space: normal;
+  }
+
+  .app-main {
+    padding: 1rem 0;
   }
 }
 

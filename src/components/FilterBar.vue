@@ -106,9 +106,21 @@ function onSearchTextChange(val: unknown) {
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .filter-row {
     grid-template-columns: 1fr;
+  }
+
+  .filter-bar {
+    padding: 1rem;
+  }
+
+  .filter-actions {
+    flex-direction: column;
+  }
+
+  .filter-actions .p-button {
+    width: 100%;
   }
 }
 
