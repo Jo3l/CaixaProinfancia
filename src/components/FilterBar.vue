@@ -28,6 +28,20 @@ function onSearchTextChange(val: unknown) {
   <div v-if="data" class="filter-bar">
     <div class="filter-row">
       <div class="filter-item">
+        <label class="filter-label">Edades</label>
+        <MultiSelect
+          :model-value="filters.edades"
+          :options="data.edades"
+          placeholder="Seleccionar edades..."
+          :max-selected-labels="2"
+          :selected-items-label="'{0} edades'"
+          :show-toggle-all="false"
+          class="filter-select"
+          @update:model-value="(val) => updateFilter('edades', val)"
+        />
+      </div>
+
+      <div class="filter-item">
         <label class="filter-label">Competencia trabajada</label>
         <MultiSelect
           :model-value="filters.competencias"
@@ -43,20 +57,6 @@ function onSearchTextChange(val: unknown) {
             <span>{{ slotProps.option }}</span>
           </template>
         </MultiSelect>
-      </div>
-
-      <div class="filter-item">
-        <label class="filter-label">Edades</label>
-        <MultiSelect
-          :model-value="filters.edades"
-          :options="data.edades"
-          placeholder="Seleccionar edades..."
-          :max-selected-labels="2"
-          :selected-items-label="'{0} edades'"
-          :show-toggle-all="false"
-          class="filter-select"
-          @update:model-value="(val) => updateFilter('edades', val)"
-        />
       </div>
 
       <div class="filter-item filter-search">

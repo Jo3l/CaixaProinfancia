@@ -55,6 +55,7 @@ function extractData(workbook: XLSX.WorkBook): ExcelData {
   const actividades: Actividad[] = []
   const competenciasSet = new Set<string>()
   const edadesSet = new Set<string>()
+  const objetivosSet = new Set<string>()
 
   for (let i = headerRowIndex + 1; i < rawData.length; i++) {
     const row = rawData[i]
@@ -64,7 +65,7 @@ function extractData(workbook: XLSX.WorkBook): ExcelData {
     const edades = String(row[1] || '').trim()
     const nombre = String(row[2] || '').trim()
     const objetivos = String(row[3] || '').trim()
-    const palabrasClave = String(row[4] || '').trim()
+    const palabrasClave = String(row[4] || '').trim().replace(/"/g, '')
     const descripcion = String(row[5] || '').trim()
     const materiales = String(row[6] || '').trim()
     const enlace = String(row[7] || '').trim()
@@ -89,12 +90,14 @@ function extractData(workbook: XLSX.WorkBook): ExcelData {
 
     if (competencia) competenciasSet.add(competencia)
     if (edades) edadesSet.add(edades)
+    if (objetivos) objetivosSet.add(objetivos)
   }
 
   return {
     actividades,
     competencias: [...competenciasSet].sort(),
     edades: [...edadesSet].sort(),
+    objetivos: [...objetivosSet].sort(),
   }
 }
 

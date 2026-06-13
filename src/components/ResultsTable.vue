@@ -24,6 +24,10 @@ const totalRecords = computed(() => props.actividades.length)
 function hasDetails(act: Actividad): boolean {
   return !!(act.objetivos || act.descripcion || act.materiales || act.enlace || act.notas)
 }
+
+function getKeywords(palabrasClave: string): string[] {
+  return palabrasClave.split(';').map((k: string) => k.trim()).filter(Boolean)
+}
 </script>
 
 <template>
@@ -65,6 +69,18 @@ function hasDetails(act: Actividad): boolean {
           </span>
           <span v-else-if="col.field === 'edades'">
             <Tag :value="data[col.field]" severity="warn" rounded />
+          </span>
+          <span v-else-if="col.field === 'palabrasClave'">
+            <div class="tags-wrap">
+              <Tag
+                v-for="kw in getKeywords(data.palabrasClave)"
+                :key="kw"
+                :value="kw"
+                severity="success"
+                rounded
+                class="kw-tag"
+              />
+            </div>
           </span>
           <span v-else>{{ data[col.field] }}</span>
         </template>
@@ -144,6 +160,16 @@ function hasDetails(act: Actividad): boolean {
 .activity-name {
   font-weight: 500;
   color: #1a73e8;
+}
+
+.tags-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.kw-tag {
+  font-size: 0.75rem;
 }
 
 .expansion-panel {

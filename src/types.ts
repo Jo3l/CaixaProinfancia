@@ -21,4 +21,5 @@ export interface ExcelData {
   actividades: Actividad[]
   competencias: string[]
   edades: string[]
+  objetivos: string[]
 }
