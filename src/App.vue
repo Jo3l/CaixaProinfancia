@@ -989,9 +989,6 @@ function clearFilters() {
   <footer class="app-footer">
     <div class="container footer-content">
       <p>CaixaProinfancia Madrid © 2025</p>
-      <p class="footer-credits">
-        Desarrollado con Vue 3 + PrimeVue | Datos del repositorio colaborativo
-      </p>
     </div>
   </footer>
 </template>
@@ -1307,7 +1304,7 @@ function clearFilters() {
 
 .ctable-wrapper {
   overflow-y: auto;
-  max-height: calc(90vh - 7rem);
+  max-height: calc(90vh - 11rem);
 }
 
 /* Entity table */
